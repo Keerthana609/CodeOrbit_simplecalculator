@@ -1,0 +1,106 @@
+"""
+To-Do List CLI App
+CodeOrbit Tech - Python Programming Internship (Task 2)
+
+A command-line to-do list app that lets users add, view, remove, and
+mark tasks as done. Tasks are kept in a list during runtime and saved
+to a text file (tasks.txt) so they persist between sessions.
+"""
+
+import os
+
+TASKS_FILE = "tasks.txt"
+
+
+def load_tasks():
+    """Load tasks from the text file into a list, if the file exists."""
+    tasks = []
+    if os.path.exists(TASKS_FILE):
+        with open(TASKS_FILE, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    tasks.append(line)
+    return tasks
+
+
+def save_tasks(tasks):
+    """Save the current list of tasks to the text file."""
+    with open(TASKS_FILE, "w", encoding="utf-8") as f:
+        for task in tasks:
+            f.write(task + "\n")
+
+
+def view_tasks(tasks):
+    """Display all tasks in a numbered, easy-to-read format."""
+    print("\n----- YOUR TO-DO LIST -----")
+    if not tasks:
+        print("No tasks yet. Add one!")
+    else:
+        for i, task in enumerate(tasks, start=1):
+            print(f"{i}. {task}")
+    print("----------------------------\n")
+
+
+def add_task(tasks):
+    """Prompt the user for a new task and add it to the list."""
+    task = input("Enter the new task: ").strip()
+    if task:
+        tasks.append(task)
+        save_tasks(tasks)
+        print(f'Task "{task}" added.\n')
+    else:
+        print("Task cannot be empty.\n")
+
+
+def remove_task(tasks):
+    """Prompt the user for a task number to remove and delete it."""
+    view_tasks(tasks)
+    if not tasks:
+        return
+    try:
+        choice = int(input("Enter the task number to remove: "))
+        if 1 <= choice <= len(tasks):
+            removed = tasks.pop(choice - 1)
+            save_tasks(tasks)
+            print(f'Task "{removed}" removed.\n')
+        else:
+            print("Invalid task number.\n")
+    except ValueError:
+        print("Please enter a valid number.\n")
+
+
+def show_menu():
+    """Print the main menu options."""
+    print("1. View Tasks")
+    print("2. Add Task")
+    print("3. Remove Task")
+    print("4. Exit")
+
+
+def main():
+    tasks = load_tasks()
+
+    print("=" * 40)
+    print("        TO-DO LIST CLI APP")
+    print("=" * 40)
+
+    while True:
+        show_menu()
+        choice = input("Choose an option (1-4): ").strip()
+
+        if choice == "1":
+            view_tasks(tasks)
+        elif choice == "2":
+            add_task(tasks)
+        elif choice == "3":
+            remove_task(tasks)
+        elif choice == "4":
+            print("Tasks saved. Goodbye!")
+            break
+        else:
+            print("Invalid option. Please choose 1, 2, 3, or 4.\n")
+
+
+if __name__ == "__main__":
+    main()
